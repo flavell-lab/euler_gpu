@@ -1,5 +1,6 @@
 import torch, itertools
 from math import pi
+import numpy as np
 
 def initialize(fixed_image, moving_image, dx, dy, angles, batch_size, device):
     """
