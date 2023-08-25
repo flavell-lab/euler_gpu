@@ -54,3 +54,30 @@ def initialize(fixed_image, moving_image, dx, dy, angles, batch_size, device):
         memory_dict["angles_rad"][i:max_idx] = (torch.tensor(batched_angles) * pi / 180).to(device)
 
     return memory_dict
+
+def max_intensity_projection_and_downsample(image, downsample_factor):
+    """
+    Create a maximum-intensity projection of a 3D image along the z dimension and then downsample it.
+    
+    Parameters:
+    - image (numpy array): 3D image of shape (width, height, depth)
+    - downsample_factor (int): factor by which to downsample the 2D projection
+
+    Returns:
+    - downsampled_image (numpy array): 2D downsampled image of shape (width // downsample_factor, height // downsample_factor)
+    """
+    
+    # Maximum intensity projection along z dimension
+    mip = np.max(image, axis=2)
+    
+    # Downsampling
+    downsampled_shape = (mip.shape[0] // downsample_factor, mip.shape[1] // downsample_factor)
+    downsampled_image = np.zeros(downsampled_shape)
+    
+    for i in range(0, mip.shape[0], downsample_factor):
+        for j in range(0, mip.shape[1], downsample_factor):
+            downsampled_image[i // downsample_factor, j // downsample_factor] = np.mean(
+                mip[i:i+downsample_factor, j:j+downsample_factor]
+            )
+    
+    return downsampled_image
