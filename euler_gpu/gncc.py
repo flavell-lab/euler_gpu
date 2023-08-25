@@ -28,6 +28,9 @@ def batched_calculate_gncc(fixed_images, transformed_moving_images, memory_dict=
     a = memory_dict['a'][:batch_size]
     b = memory_dict['b'][:batch_size]
 
+    fixed_images = fixed_images[:batch_size]
+    transformed_moving_images = transformed_moving_images[:batch_size]
+
     mu_f[:] = torch.mean(fixed_images, dim=[1,2,3], keepdim=True)
     mu_m[:] = torch.mean(transformed_moving_images, dim=[1,2,3], keepdim=True)
 
