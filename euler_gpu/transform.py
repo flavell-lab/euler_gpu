@@ -7,13 +7,13 @@ def transform_image(images_repeated, dx_gpu, dy_gpu, angles_rad, memory_dict):
 
     Arguments:
 
-    - images_repeated: PyTorch tensor (N x H x W)
+    - images_repeated: PyTorch tensor (N x 1 x H x W)
     - dx_gpu, dy_gpu: lists of translations in the x and y directions, respectively, as PyTorch tensors
     - angles_rad: list of angles (in radians) to rotate the image, as a PyTorch tensor
     - memory_dict: dictionary of preallocated tensors
 
     Returns:
-    - a tensor of rotated images with size (N x H x W)
+    - a tensor of rotated images with size (N x 1 x H x W)
     """    
     H, W = images_repeated.shape[2], images_repeated.shape[3]
 
