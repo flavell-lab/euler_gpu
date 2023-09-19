@@ -16,7 +16,7 @@ def initialize(fixed_image, moving_image, dx, dy, angles, batch_size, device):
     - device: PyTorch device to use (e.g. torch.device("cuda:0"))
     """
     memory_dict = dict()
-    
+
     memory_dict["transformations"] = list(itertools.product(dx, dy, angles))
     transformations = memory_dict["transformations"]
 
@@ -47,7 +47,7 @@ def initialize(fixed_image, moving_image, dx, dy, angles, batch_size, device):
     for i in range(0, len(transformations), batch_size):
         max_idx = min(i+batch_size, len(transformations))
         batched_transformations = transformations[i:max_idx]
-        
+
         # # Unzip the transformations
         batched_dx, batched_dy, batched_angles = zip(*batched_transformations)
         memory_dict["dx_gpu"][i:max_idx] = torch.tensor(batched_dx, device=device, dtype=torch.float32)
@@ -59,7 +59,7 @@ def initialize(fixed_image, moving_image, dx, dy, angles, batch_size, device):
 def max_intensity_projection_and_downsample(image, downsample_factor):
     """
     Create a maximum-intensity projection of a 3D image along the z dimension and then downsample it.
-    
+
     Parameters:
     - image (numpy array): 3D image of shape (width, height, depth)
     - downsample_factor (int): factor by which to downsample the 2D projection
@@ -67,18 +67,18 @@ def max_intensity_projection_and_downsample(image, downsample_factor):
     Returns:
     - downsampled_image (numpy array): 2D downsampled image of shape (width // downsample_factor, height // downsample_factor)
     """
-    
+
     # Maximum intensity projection along z dimension
     mip = np.max(image, axis=2)
-    
+
     # Downsampling
     downsampled_shape = (mip.shape[0] // downsample_factor, mip.shape[1] // downsample_factor)
     downsampled_image = np.zeros(downsampled_shape)
-    
+
     for i in range(0, mip.shape[0], downsample_factor):
         for j in range(0, mip.shape[1], downsample_factor):
             downsampled_image[i // downsample_factor, j // downsample_factor] = np.mean(
                 mip[i:i+downsample_factor, j:j+downsample_factor]
             )
-    
+
     return downsampled_image

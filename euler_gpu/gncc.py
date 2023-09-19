@@ -1,15 +1,16 @@
 import torch
+import numpy as np
 
 def batched_calculate_gncc(fixed_images, transformed_moving_images, memory_dict=None, batch_size=None):
     """
     Calculate GNCC between a fixed image and a batch of moving images.
-    
+
     Args:
     - fixed_images: PyTorch tensor of shape (N x H x W)
     - transformed_moving_images: PyTorch tensor of shape (N x H x W)
     - memory_dict: dictionary of preallocated tensors
     - batch_size: number of images to process at once
-    
+
     Returns:
     - List of GNCC values for each moving image.
     """
@@ -38,3 +39,12 @@ def batched_calculate_gncc(fixed_images, transformed_moving_images, memory_dict=
     b[:] = torch.var(fixed_images, dim=[1,2,3]) * torch.var(transformed_moving_images, dim=[1,2,3])# + 1E-10
 
     return a * a / b
+
+def calculate_gncc(fixed, moving):
+
+    mu_f = np.mean(fixed)
+    mu_m = np.mean(moving)
+    a = np.sum(abs(fixed - mu_f) * abs(moving - mu_m))
+    b = np.sqrt(np.sum((fixed - mu_f) ** 2) * np.sum((moving - mu_m) ** 2))
+
+    return a / b

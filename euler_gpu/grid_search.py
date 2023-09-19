@@ -9,7 +9,7 @@ def grid_search(memory_dict):
 
     Args:
     - memory_dict: dictionary of preallocated tensors containing input images and other data.
-    
+
     Returns:
     - List of GNCC values for each transformation combination.
     """
@@ -22,7 +22,7 @@ def grid_search(memory_dict):
         dx_gpu = memory_dict["dx_gpu"][i:max_idx]
         dy_gpu = memory_dict["dy_gpu"][i:max_idx]
         angles_rad = memory_dict["angles_rad"][i:max_idx]
-                
+
         # Rotate and translate images for the current batch
         transform_image(memory_dict['moving_images_repeated'], dx_gpu, dy_gpu, angles_rad, memory_dict)
 
