@@ -49,8 +49,8 @@ def transform_image(images_repeated, dx_gpu, dy_gpu, angles_rad, memory_dict):
 
     # Grid sample expects input in (N x C x H x W) format
 
-    grid[:] = F.affine_grid(rotation_matrices, images_repeated.size(), align_corners=True)
-    output_tensor[:] = F.grid_sample(images_repeated, grid, align_corners=True)
+    grid[:] = F.affine_grid(rotation_matrices, images_repeated.size(), align_corners=False)
+    output_tensor[:] = F.grid_sample(images_repeated, grid, align_corners=False)
 
     return output_tensor
 
