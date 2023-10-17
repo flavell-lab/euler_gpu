@@ -30,7 +30,7 @@ def initialize(fixed_image, moving_image, dx, dy, angles, batch_size, device):
 
     # Preallocate memory
     memory_dict["output_tensor"] = torch.zeros_like(memory_dict["moving_images_repeated"], device=device, dtype=torch.float32)
-    memory_dict["grid"] = torch.zeros((batch_size, fixed_image.shape[0], fixed_image.shape[1], 2), device=device, dtype=torch.float32)
+    #memory_dict["grid"] = torch.zeros((batch_size, fixed_image.shape[0], fixed_image.shape[1], 2), device=device, dtype=torch.float32)
     memory_dict["gncc_results"] = torch.zeros(len(transformations), device=device, dtype=torch.float32)
     memory_dict["mu_f"] = torch.zeros((batch_size, 1, 1, 1), device=device, dtype=torch.float32)
     memory_dict["mu_m"] = torch.zeros((batch_size, 1, 1, 1), device=device, dtype=torch.float32)
@@ -56,7 +56,10 @@ def initialize(fixed_image, moving_image, dx, dy, angles, batch_size, device):
 
     return memory_dict
 
-def max_intensity_projection_and_downsample(image, downsample_factor):
+def max_intensity_projection_and_downsample(
+                image,
+                downsample_factor,
+                projection_axis=2):
     """
     Create a maximum-intensity projection of a 3D image along the z dimension and then downsample it.
 
@@ -68,8 +71,8 @@ def max_intensity_projection_and_downsample(image, downsample_factor):
     - downsampled_image (numpy array): 2D downsampled image of shape (width // downsample_factor, height // downsample_factor)
     """
 
-    # Maximum intensity projection along z dimension
-    mip = np.max(image, axis=2)
+    # Maximum intensity projection along x, y, or z dimension
+    mip = np.max(image, axis=projection_axis)
 
     # Downsampling
     downsampled_shape = (mip.shape[0] // downsample_factor, mip.shape[1] // downsample_factor)
