@@ -37,7 +37,6 @@ def transform_image(images_repeated,
     sin_vals = memory_dict['sin_vals'][:batch_size]
     rotation_matrices = memory_dict['rotation_matrices'][:batch_size]
     output_tensor = memory_dict['output_tensor'][:batch_size]
-    grid = memory_dict['grid'][:batch_size]
 
     # Rotation and translation
     cos_vals[:] = torch.cos(angles_rad)
@@ -53,8 +52,10 @@ def transform_image(images_repeated,
 
     # Grid sample expects input in (N x C x H x W) format
 
-    grid[:] = F.affine_grid(rotation_matrices, images_repeated.size(), align_corners=True)
-    output_tensor[:] = F.grid_sample(images_repeated, grid, align_corners=True)
+    grid = F.affine_grid(rotation_matrices, images_repeated.size(),
+            align_corners=False)
+    output_tensor[:] = F.grid_sample(images_repeated, grid,
+            align_corners=False)
 
     return output_tensor
 
