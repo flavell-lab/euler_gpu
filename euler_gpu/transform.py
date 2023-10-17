@@ -57,6 +57,7 @@ def transform_image(images_repeated,
     output_tensor[:] = F.grid_sample(images_repeated, grid,
             align_corners=False)
 
+
     return output_tensor
 
 
