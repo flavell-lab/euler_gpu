@@ -5,7 +5,12 @@ import torch
 import torch.nn.functional as F
 
 
-def transform_image(images_repeated, dx_gpu, dy_gpu, angles_rad, memory_dict):
+def transform_image(images_repeated,
+                    dx_gpu,
+                    dy_gpu,
+                    angles_rad,
+                    memory_dict,
+                    projection_axis=2):
     """
     Rotate the image by a list of angles.
 
@@ -22,10 +27,9 @@ def transform_image(images_repeated, dx_gpu, dy_gpu, angles_rad, memory_dict):
 
     Returns:
     - a tensor of rotated images with size (N x 1 x H x W)
-    """    
-    H, W = images_repeated.shape[2], images_repeated.shape[3]
-
+    """
     batch_size = dx_gpu.shape[0]
+    H, W = images_repeated.shape[2], images_repeated.shape[3]
 
     # Initialize variables
     images_repeated = images_repeated[:batch_size]
