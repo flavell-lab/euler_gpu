@@ -37,6 +37,7 @@ def transform_image(images_repeated,
     sin_vals = memory_dict['sin_vals'][:batch_size]
     rotation_matrices = memory_dict['rotation_matrices'][:batch_size]
     output_tensor = memory_dict['output_tensor'][:batch_size]
+    grid = memory_dict['grid'][:batch_size]
 
     # Rotation and translation
     cos_vals[:] = torch.cos(angles_rad)

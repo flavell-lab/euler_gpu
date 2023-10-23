@@ -30,7 +30,7 @@ def initialize(fixed_image, moving_image, dx, dy, angles, batch_size, device):
 
     # Preallocate memory
     memory_dict["output_tensor"] = torch.zeros_like(memory_dict["moving_images_repeated"], device=device, dtype=torch.float32)
-    #memory_dict["grid"] = torch.zeros((batch_size, fixed_image.shape[0], fixed_image.shape[1], 2), device=device, dtype=torch.float32)
+    memory_dict["grid"] = torch.zeros((batch_size, fixed_image.shape[0], fixed_image.shape[1], 2), device=device, dtype=torch.float32)
     memory_dict["gncc_results"] = torch.zeros(len(transformations), device=device, dtype=torch.float32)
     memory_dict["mu_f"] = torch.zeros((batch_size, 1, 1, 1), device=device, dtype=torch.float32)
     memory_dict["mu_m"] = torch.zeros((batch_size, 1, 1, 1), device=device, dtype=torch.float32)
