@@ -56,21 +56,21 @@ def initialize(fixed_image, moving_image, dx, dy, angles, batch_size, device):
 
     return memory_dict
 
-def max_intensity_projection_and_downsample(
-                image,
-                downsample_factor,
-                projection_axis=2):
+
+def max_intensity_projection_and_downsample(image,
+            downsample_factor,
+            projection_axis):
+
     """
     Create a maximum-intensity projection of a 3D image along the z dimension and then downsample it.
 
     Parameters:
-    - image (numpy array): 3D image of shape (width, height, depth)
+    - image (numpy array): 3D image of shape (width, height, depth), i.e., (x, y, z)
     - downsample_factor (int): factor by which to downsample the 2D projection
 
     Returns:
     - downsampled_image (numpy array): 2D downsampled image of shape (width // downsample_factor, height // downsample_factor)
     """
-
     # Maximum intensity projection along x, y, or z dimension
     mip = np.max(image, axis=projection_axis)
 

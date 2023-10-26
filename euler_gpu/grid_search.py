@@ -27,7 +27,11 @@ def grid_search(memory_dict):
         transform_image(memory_dict['moving_images_repeated'], dx_gpu, dy_gpu, angles_rad, memory_dict)
 
         # Compute GNCC for the current batch of transformed images
-        batched_gncc_values = batched_calculate_gncc(memory_dict['fixed_images_repeated'], memory_dict['output_tensor'], memory_dict=memory_dict, batch_size=dx_gpu.shape[0])
+        batched_gncc_values = batched_calculate_gncc(
+                        memory_dict['fixed_images_repeated'],
+                        memory_dict['output_tensor'],
+                        memory_dict=memory_dict,
+                        batch_size=dx_gpu.shape[0])
         memory_dict['gncc_results'][i:min(i+batch_size, len(transformations))] = batched_gncc_values[:]
 
     best_score, best_transformation = get_best_score(memory_dict['gncc_results'], memory_dict)
