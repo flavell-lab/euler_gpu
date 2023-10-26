@@ -9,8 +9,7 @@ def transform_image(images_repeated,
                     dx_gpu,
                     dy_gpu,
                     angles_rad,
-                    memory_dict,
-                    projection_axis=2):
+                    memory_dict):
     """
     Rotate the image by a list of angles.
 
@@ -83,39 +82,6 @@ def transform_image_3d(resized_moving_image_xyz,
                  axis=1),
                  (1, 2, 0))
 
-
-def transform_image_3d_v0(resized_fixed_image_xyz,
-                       resized_moving_image_xyz,
-                       best_transformation,
-                       device):
-
-    z_dim = resized_fixed_image_xyz.shape[2]
-    moving_image_xyz_tensor = torch.tensor(
-                resized_moving_image_xyz.astype(np.float32).transpose(2, 0, 1),
-                device=device,
-                dtype=torch.float32)
-    moving_image_xyz_tensor = moving_image_xyz_tensor.unsqueeze(1).repeat(1, 1, 1, 1)
-
-    memory_dict_3d = initialize(
-                resized_fixed_image_xyz.astype(np.float32)[:, :, 0],
-                resized_moving_image_xyz.astype(np.float32)[:, :, 0],
-                torch.zeros(z_dim, device=device),
-                torch.zeros(z_dim, device=device),
-                torch.zeros(z_dim, device=device),
-                z_dim,
-                device)
-
-    transformed_moving_image_xyz = transform_image(
-                moving_image_xyz_tensor,
-                best_transformation[0].repeat(z_dim),
-                best_transformation[1].repeat(z_dim),
-                best_transformation[2].repeat(z_dim),
-                memory_dict_3d)
-
-    return np.transpose(np.squeeze(
-                 transformed_moving_image_xyz.cpu().numpy(),
-                 axis=1),
-                 (1, 2, 0))
 
 def translate_along_z(shift_range,
                       resized_fixed_image_xyz,
