@@ -61,7 +61,7 @@ def transform_image(images_repeated,
     return output_tensor
 
 
-def transform_image_3d_(resized_moving_image_xyz,
+def transform_image_3d(resized_moving_image_xyz,
                       memory_dict,
                       best_transformation,
                       device,
