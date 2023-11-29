@@ -61,24 +61,48 @@ def transform_image(images_repeated,
     return output_tensor
 
 
-def transform_image_3d(resized_moving_image_xyz,
+def transform_image_3d_(resized_moving_image_xyz,
                       memory_dict,
                       best_transformation,
-                      device):
+                      device,
+                      dimension):
 
-    z_dimension = resized_moving_image_xyz.shape[2]
-    moving_image_xyz_tensor = torch.tensor(
+    axis_dimension = resized_moving_image_xyz.shape[dimension]
+    if dimension == 0:
+        moving_image_xyz_tensor = torch.tensor(
+                resized_moving_image_xyz.astype(np.float32),
+                device=device,
+                dtype=torch.float32).unsqueeze(1).repeat(1, 1, 1, 1)
+    elif dimension == 1:
+        moving_image_xyz_tensor = torch.tensor(
+                resized_moving_image_xyz.astype(np.float32).transpose(1, 0, 2),
+                device=device,
+                dtype=torch.float32).unsqueeze(1).repeat(1, 1, 1, 1)
+    elif dimension == 2:
+        moving_image_xyz_tensor = torch.tensor(
                 resized_moving_image_xyz.astype(np.float32).transpose(2, 0, 1),
                 device=device,
                 dtype=torch.float32).unsqueeze(1).repeat(1, 1, 1, 1)
+    else:
+        raise ValueError("dimension must be 0, 1, or 2")
 
     transformed_moving_image_xyz = transform_image(
                 moving_image_xyz_tensor,
-                best_transformation[0].repeat(z_dimension),
-                best_transformation[1].repeat(z_dimension),
-                best_transformation[2].repeat(z_dimension),
+                best_transformation[0].repeat(axis_dimension),
+                best_transformation[1].repeat(axis_dimension),
+                best_transformation[2].repeat(axis_dimension),
                 memory_dict)
-    return np.transpose(np.squeeze(
+                
+    if dimension == 0:
+        return np.squeeze(transformed_moving_image_xyz.cpu().numpy(),
+                          axis=1)
+    elif dimension == 1:
+        return np.transpose(np.squeeze(
+                 transformed_moving_image_xyz.cpu().numpy(),
+                 axis=1),
+                 (1, 0, 2))
+    elif dimension == 2:
+        return np.transpose(np.squeeze(
                  transformed_moving_image_xyz.cpu().numpy(),
                  axis=1),
                  (1, 2, 0))
