@@ -9,7 +9,8 @@ def transform_image(images_repeated,
                     dx_gpu,
                     dy_gpu,
                     angles_rad,
-                    memory_dict):
+                    memory_dict,
+                    interpolation="bilinear"):
     """
     Rotate the image by a list of angles.
 
@@ -55,7 +56,7 @@ def transform_image(images_repeated,
     grid[:] = F.affine_grid(rotation_matrices, images_repeated.size(),
             align_corners=False)
     output_tensor[:] = F.grid_sample(images_repeated, grid,
-            align_corners=False)
+            align_corners=False, mode=interpolation)
 
 
     return output_tensor
@@ -65,7 +66,8 @@ def transform_image_3d(resized_moving_image_xyz,
                       memory_dict,
                       best_transformation,
                       device,
-                      dimension):
+                      dimension,
+                      interpolation="bilinear"):
 
     axis_dimension = resized_moving_image_xyz.shape[dimension]
     if dimension == 0:
@@ -91,7 +93,8 @@ def transform_image_3d(resized_moving_image_xyz,
                 best_transformation[0].repeat(axis_dimension),
                 best_transformation[1].repeat(axis_dimension),
                 best_transformation[2].repeat(axis_dimension),
-                memory_dict)
+                memory_dict,
+                interpolation=interpolation)
                 
     if dimension == 0:
         return np.squeeze(transformed_moving_image_xyz.cpu().numpy(),
