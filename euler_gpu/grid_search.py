@@ -51,7 +51,7 @@ def get_best_score(gncc_results, memory_dict):
     - The best GNCC score.
     - The transformation corresponding to the best score.
     """
-
+    gncc_results[torch.isnan(gncc_results)] = float('-inf')
     best_score, best_index = torch.max(gncc_results, 0)
 
     best_dx = memory_dict['dx_gpu'][best_index:best_index+1]
