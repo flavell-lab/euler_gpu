@@ -9,7 +9,8 @@ def transform_image(images_repeated,
                     dx_gpu,
                     dy_gpu,
                     angles_rad,
-                    memory_dict):
+                    memory_dict,
+                    interpolation="bilinear"):
     """
     Rotate the image by a list of angles.
 
@@ -55,7 +56,7 @@ def transform_image(images_repeated,
     grid[:] = F.affine_grid(rotation_matrices, images_repeated.size(),
             align_corners=False)
     output_tensor[:] = F.grid_sample(images_repeated, grid,
-            align_corners=False)
+            align_corners=False, mode=interpolation)
 
 
     return output_tensor
@@ -64,21 +65,47 @@ def transform_image(images_repeated,
 def transform_image_3d(resized_moving_image_xyz,
                       memory_dict,
                       best_transformation,
-                      device):
+                      device,
+                      dimension,
+                      interpolation="bilinear"):
 
-    z_dimension = resized_moving_image_xyz.shape[2]
-    moving_image_xyz_tensor = torch.tensor(
+    axis_dimension = resized_moving_image_xyz.shape[dimension]
+    if dimension == 0:
+        moving_image_xyz_tensor = torch.tensor(
+                resized_moving_image_xyz.astype(np.float32),
+                device=device,
+                dtype=torch.float32).unsqueeze(1).repeat(1, 1, 1, 1)
+    elif dimension == 1:
+        moving_image_xyz_tensor = torch.tensor(
+                resized_moving_image_xyz.astype(np.float32).transpose(1, 0, 2),
+                device=device,
+                dtype=torch.float32).unsqueeze(1).repeat(1, 1, 1, 1)
+    elif dimension == 2:
+        moving_image_xyz_tensor = torch.tensor(
                 resized_moving_image_xyz.astype(np.float32).transpose(2, 0, 1),
                 device=device,
                 dtype=torch.float32).unsqueeze(1).repeat(1, 1, 1, 1)
+    else:
+        raise ValueError("dimension must be 0, 1, or 2")
 
     transformed_moving_image_xyz = transform_image(
                 moving_image_xyz_tensor,
-                best_transformation[0].repeat(z_dimension),
-                best_transformation[1].repeat(z_dimension),
-                best_transformation[2].repeat(z_dimension),
-                memory_dict)
-    return np.transpose(np.squeeze(
+                best_transformation[0].repeat(axis_dimension),
+                best_transformation[1].repeat(axis_dimension),
+                best_transformation[2].repeat(axis_dimension),
+                memory_dict,
+                interpolation=interpolation)
+                
+    if dimension == 0:
+        return np.squeeze(transformed_moving_image_xyz.cpu().numpy(),
+                          axis=1)
+    elif dimension == 1:
+        return np.transpose(np.squeeze(
+                 transformed_moving_image_xyz.cpu().numpy(),
+                 axis=1),
+                 (1, 0, 2))
+    elif dimension == 2:
+        return np.transpose(np.squeeze(
                  transformed_moving_image_xyz.cpu().numpy(),
                  axis=1),
                  (1, 2, 0))
