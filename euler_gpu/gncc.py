@@ -44,7 +44,7 @@ def calculate_gncc(fixed, moving):
 
     mu_f = np.mean(fixed)
     mu_m = np.mean(moving)
-    a = np.sum(abs(fixed - mu_f) * abs(moving - mu_m))
+    a = np.sum((fixed - mu_f) * (moving - mu_m))
     b = np.sqrt(np.sum((fixed - mu_f) ** 2) * np.sum((moving - mu_m) ** 2))
 
     return a / b
