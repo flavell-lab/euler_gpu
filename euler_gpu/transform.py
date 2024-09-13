@@ -21,9 +21,11 @@ def transform_image(images_repeated,
         * C := number of channel (should be 1)
         * H := height of the image
         * W := width of the image
-    - dx_gpu, dy_gpu: lists of translations in the x and y directions, respectively, as PyTorch tensors
+    - dx_gpu: list of translations in the x direction, as a PyTorch tensor
+    - dy_gpu: list of translations in the y direction, as a PyTorch tensor
     - angles_rad: list of angles (in radians) to rotate the image, as a PyTorch tensor
     - memory_dict: dictionary of preallocated tensors
+    - interpolation: interpolation method to use (default: bilinear)
 
     Returns:
     - a tensor of rotated images with size (N x 1 x H x W)
@@ -68,7 +70,30 @@ def transform_image_3d(resized_moving_image_xyz,
                       device,
                       dimension,
                       interpolation="bilinear"):
+    """
+    Transform a 3D image along a specified dimension.
 
+    Arguments:
+    - resized_moving_image_xyz: NumPy array
+        The 3D image to be transformed.
+    - memory_dict: dict
+        Dictionary containing preallocated tensors for efficiency.
+    - best_transformation: list or tuple
+        Contains the best transformation parameters [dx, dy, angle].
+    - device: torch.device
+        The device (CPU or GPU) to perform computations on.
+    - dimension: int
+        The dimension along which to perform the transformation (0, 1, or 2).
+    - interpolation: str, optional
+        Interpolation method to use (default: "bilinear").
+
+    Returns:
+    - NumPy array
+        The transformed 3D image.
+
+    Raises:
+    - ValueError: If dimension is not 0, 1, or 2.
+    """
     axis_dimension = resized_moving_image_xyz.shape[dimension]
     if dimension == 0:
         moving_image_xyz_tensor = torch.tensor(
@@ -115,6 +140,27 @@ def translate_along_z(shift_range,
                       resized_fixed_image_xyz,
                       transformed_moving_image_xyz,
                       moving_image_median):
+    """
+    Translate the moving image along the z-axis to find the best alignment with the fixed image.
+
+    Arguments:
+    - shift_range: range or list
+        The range of z-axis shifts to try.
+    - resized_fixed_image_xyz: NumPy array
+        The fixed 3D image.
+    - transformed_moving_image_xyz: NumPy array
+        The moving 3D image after initial Euler transformation, but in need of z-translation.
+    - moving_image_median: float
+        The median value of the moving image, used for padding.
+
+    Returns:
+    - dz: int
+        The optimal z-axis shift.
+    - gncc: float
+        The global normalized cross-correlation value for the best alignment.
+    - final_moving_image_xyz: NumPy array
+        The final transformed and z-shifted moving image.
+    """
 
     final_moving_image_xyz = np.full(
             transformed_moving_image_xyz.shape,
@@ -138,6 +184,25 @@ def translate_along_z(shift_range,
 
 def search_for_z(shift_range, resized_fixed_image_xyz,
         transformed_moving_image_xyz, moving_image_median):
+    """
+    Search for the optimal z-axis shift to align the moving image with the fixed image.
+
+    Arguments:
+    - shift_range: range or list
+        The range of z-axis shifts to try.
+    - resized_fixed_image_xyz: NumPy array
+        The fixed 3D image.
+    - transformed_moving_image_xyz: NumPy array
+        The moving 3D image after initial Euler transformation, but in need of z-translation.
+    - moving_image_median: float
+        The median value of the moving image, used for padding.
+
+    Returns:
+    - dz: int
+        The optimal z-axis shift.
+    - gncc: float
+        The global normalized cross-correlation value for the best alignment.
+    """
 
     new_moving_image_xyz = np.full(
             transformed_moving_image_xyz.shape,
